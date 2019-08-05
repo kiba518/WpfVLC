@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="WpfVLC.UCHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfVLC"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="800" Loaded="UserControl_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Grid>
+        <DockPanel Name="Header" DockPanel.Dock="Top">
+            <Border BorderBrush="Gold"  BorderThickness="0,0,0,1" >
+                <DockPanel Background="#46270c">
+
+                    <DockPanel DockPanel.Dock="Right">
+                        <StackPanel Orientation="Horizontal">
+
+                        </StackPanel>
+                        <Border BorderBrush="Gold"  BorderThickness="1,0,0,0" >
+                            <StackPanel>
+                                <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="btnMin" Content="" Width="55" Height="40" VerticalAlignment="Top" Click="BtnMin_Click">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <DockPanel Name="dpCon">
+                                                    <DockPanel>
+                                                        <DockPanel.Background>
+                                                            <ImageBrush ImageSource="image/min.png" Stretch="None"/>
+                                                        </DockPanel.Background>
+                                                    </DockPanel>
+                                                </DockPanel>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="Background" TargetName="dpCon" Value="#ff5252"></Setter>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="true"/>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Name="btnMax" Content="○" Width="55" Height="40" VerticalAlignment="Top" Click="BtnMax_Click">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <DockPanel Name="dpCon">
+                                                    <DockPanel>
+                                                        <DockPanel.Background>
+                                                            <ImageBrush ImageSource="image/max.png" Stretch="None"/>
+                                                        </DockPanel.Background>
+                                                    </DockPanel>
+                                                </DockPanel>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="Background" TargetName="dpCon" Value="#ff5252"></Setter>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="true"/>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Name="btnClose" Content="X" Width="55" Height="40" VerticalAlignment="Top" Click="BtnClose_Click">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <DockPanel Name="dpCon">
+                                                    <DockPanel>
+                                                        <DockPanel.Background>
+                                                            <ImageBrush ImageSource="image/close.png" Stretch="None"/>
+                                                        </DockPanel.Background>
+                                                    </DockPanel>
+                                                </DockPanel>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="Background" TargetName="dpCon" Value="#ff5252"></Setter>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="true"/>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="20,5,20,10">
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="40,20,0,0">
+                                <TextBlock Text="WPF_VLC" FontSize="16" Foreground="White"></TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </DockPanel>
+                </DockPanel>
+            </Border>
+        </DockPanel>
+    </Grid>
+</UserControl>

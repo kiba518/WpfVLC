@@ -1,4 +1,4 @@
-﻿<Window x:Class="WpfVLC.MainWindow"
+﻿<Window x:Class="WpfVLC.WindowRTSP"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -17,8 +17,9 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Bottom">
                         <StackPanel Height="50" DockPanel.Dock="Bottom" Orientation="Horizontal">
-                            <Button Name="btnOpen" Content="打开文件" Click="open_Click" Width="80"></Button>
-                            <Button Name="btnPause" Content="暂停" Click="pause_Click" Width="50"></Button>
+                            <TextBlock Text="rtsp地址：" VerticalAlignment="Center"></TextBlock>
+                            <TextBox Name="txtRtsp" Width="200" VerticalContentAlignment="Center" Text="rtsp://192.168.1.111"></TextBox>
+                            <Button Name="btnRtsp" Content="播放" Click="rtsp_Click" Width="50"></Button>
                             <Button Name="btnStop" Content="停止" Click="stop_Click" Width="50"></Button>
                         </StackPanel>
                     </DockPanel>
