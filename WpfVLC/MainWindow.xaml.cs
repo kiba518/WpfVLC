@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace WpfVLC
 {
@@ -33,7 +34,35 @@ namespace WpfVLC
             var currentAssembly = Assembly.GetEntryAssembly();
             var currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
             var libDirectory = new DirectoryInfo(System.IO.Path.Combine(currentDirectory, "libvlc", IntPtr.Size == 4 ? "win-x86" : "win-x64"));
-            this.VlcControl.SourceProvider.CreatePlayer(libDirectory); 
+            this.VlcControl.SourceProvider.CreatePlayer(libDirectory);
+            this.VlcControl.SourceProvider.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
+        }
+
+        private void MediaPlayer_LengthChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                slider1.Maximum = this.VlcControl.SourceProvider.MediaPlayer.Length;//毫秒
+            }), DispatcherPriority.Normal);
+        }
+
+        private void Slider1_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        { 
+            var position = (float)(slider1.Value / slider1.Maximum);
+            if (position == 1)
+            {
+                position = 0.99f;
+            }
+            this.VlcControl.SourceProvider.MediaPlayer.Position = position;//Position为百分比，要小于1，等于1会停止
+        }
+        private void Slider2_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            //Audio.IsMute :静音和非静音
+            //Audio.Volume：音量的百分比，值在0—200之间
+            //Audio.Tracks：音轨信息，值在0 - 65535之间
+            //Audio.Channel：值在1至5整数，指示的音频通道模式使用，值可以是：“1 = 立体声”，“2 = 反向立体声”，“3 = 左”，“4 = 右” “5 = 混音”。 
+            //Audio.ToggleMute() : 方法，切换静音和非静音 
+            this.VlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)slider2.Value;
         }
         private void open_Click(object sender, RoutedEventArgs e)
         {
@@ -48,6 +77,7 @@ namespace WpfVLC
                 {
                     btnPause.Content = "暂停";
                     this.VlcControl.SourceProvider.MediaPlayer.Play(new Uri(filePath));
+                     
                 }
                 catch (Exception ex)
                 {
@@ -76,5 +106,7 @@ namespace WpfVLC
 
             }).Start();
         }
+
+     
     }
 }
