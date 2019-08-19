@@ -62,7 +62,7 @@ namespace WpfVLC
             /// This parameter will be overriden if <see cref="SetVideoFormatCallbacks"/> is used
             /// </param>
             this.VlcControl.SourceProvider.MediaPlayer.SetVideoCallbacks(LockVideo, null, DisplayVideo, IntPtr.Zero);// //LockVideoCallback lockVideo, UnlockVideoCallback unlockVideo, DisplayVideoCallback display, IntPtr userData
-              
+           
         }
         /// <summary>
         /// Called by libvlc when it wants to acquire a buffer where to write
@@ -183,7 +183,25 @@ namespace WpfVLC
 
             }).Start();
         }
+        private float lastPlayTime = 0;
+        private float lastPlayTimeGlobal = 0;
 
-     
+        public float GetCurrentTime()
+        {
+            float currentTime = this.VlcControl.SourceProvider.MediaPlayer.Time;
+            var tick = float.Parse(DateTime.Now.ToString("fff"));
+            if (lastPlayTime == currentTime && lastPlayTime != 0)
+            {
+                currentTime += (tick - lastPlayTimeGlobal);
+            }
+            else
+            {
+                lastPlayTime = currentTime;
+                lastPlayTimeGlobal = tick;
+            }
+
+            return currentTime * 0.001f;
+        }
+
     }
 }

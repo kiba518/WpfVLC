@@ -36,9 +36,9 @@ namespace WpfVLC
         {
             string mrl = @"dshow://  ";
             string optVideo = @":dshow-vdev=c922 Pro Stream Webcam";
-            //string optAudio = @":dshow-adev=";
+            string optAudio = @":dshow-adev=麦克风 (C922 Pro Stream Webcam)";
             string size = ":dshow-size=800";
-            this.VlcControl.SourceProvider.MediaPlayer.Play(mrl, optVideo, size);
+            this.VlcControl.SourceProvider.MediaPlayer.Play(mrl, optVideo, optAudio, size);
         }
     
         private void stop_Click(object sender, RoutedEventArgs e)
