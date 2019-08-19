@@ -179,6 +179,7 @@ namespace WpfVLC
                
                 //":sout=#duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +dest+"}}",//可以录像，但是该录像视频太大，建议转码后录像,并且不录制声音  
             };
+            this.VlcControl.SourceProvider.MediaPlayer.ResetMedia();//不设置，第二次录像将无声音
             this.VlcControl.SourceProvider.MediaPlayer.Play(mrl, options); 
         }
 
