@@ -42,7 +42,7 @@ namespace WpfVLC
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                slider1.Maximum = this.VlcControl.SourceProvider.MediaPlayer.Length;//毫秒
+                slider1.Maximum = this.VlcControl.SourceProvider.MediaPlayer.Length;//长度
             }), DispatcherPriority.Normal);
         }
 

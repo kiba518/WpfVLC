@@ -41,14 +41,29 @@ namespace WpfVLC
             currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
             var libDirectory = new DirectoryInfo(System.IO.Path.Combine(currentDirectory, "libvlc", IntPtr.Size == 4 ? "win-x86" : "win-x64"));  
             destination = Path.Combine(currentDirectory, "record.ts");
-            mediaOptions = new[]
-            {
-                    ":sout=#file{dst=" + destination + "}",
-                    ":sout-keep"// 持续开启串流输出 (默认关闭)
-            };
+         
             this.VlcControl.SourceProvider.CreatePlayer(libDirectory); 
             this.VlcControl.SourceProvider.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
             this.VlcControl.SourceProvider.MediaPlayer.EncounteredError += MediaPlayer_EncounteredError;
+            this.VlcControl.SourceProvider.MediaPlayer.SetVideoCallbacks(LockVideo, null, DisplayVideo, IntPtr.Zero);// //LockVideoCallback lockVideo, UnlockVideoCallback unlockVideo, DisplayVideoCallback display, IntPtr userData
+
+        }
+        private IntPtr LockVideo(IntPtr userdata, IntPtr planes)
+        {
+            Marshal.WriteIntPtr(planes, userdata);
+            return userdata;
+        }
+        private void DisplayVideo(IntPtr userdata, IntPtr picture)
+        {
+            // Invalidates the bitmap
+            this.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                (this.VlcControl.SourceProvider.VideoSource as InteropBitmap)?.Invalidate();
+                Console.WriteLine(GetCurrentTime()); ;
+
+
+            }));
+
         }
 
         private void MediaPlayer_EncounteredError(object sender, Vlc.DotNet.Core.VlcMediaPlayerEncounteredErrorEventArgs e)
@@ -60,7 +75,7 @@ namespace WpfVLC
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                slider1.Maximum = this.VlcControl.SourceProvider.MediaPlayer.Length;//毫秒
+                slider1.Maximum = this.VlcControl.SourceProvider.MediaPlayer.Length;//长度
             }), DispatcherPriority.Normal);
         }
 
@@ -82,28 +97,7 @@ namespace WpfVLC
             //Audio.ToggleMute() : 方法，切换静音和非静音 
             this.VlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)slider2.Value;
         }
-        private void open_Click(object sender, RoutedEventArgs e)
-        { 
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Multiselect = false;
-            ofd.Title = "请选择视频文件";
-            var result = ofd.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                filePath = ofd.FileName;
-                try
-                {
-                    btnPause.Content = "暂停";
-
-                    this.VlcControl.SourceProvider.MediaPlayer.SetMedia(new Uri(filePath));
-                    this.VlcControl.SourceProvider.MediaPlayer.Play(); 
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-        }
+      
         private void open_ClickDuplicate(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -118,10 +112,14 @@ namespace WpfVLC
                     btnPause.Content = "暂停";
                     var options = new[]
                     {
-                        //":sout=#file{dst=" + destination + "}",
-                        ":sout=#duplicate{dst=display,dst=std{access=file,mux=ts,dst="+destination+"}}", 
+                        ":mmdevice-volume=0",
+                        //":audiofile-channels=0",
+                        ":live-caching = 0",//本地缓存毫秒数 
+                        ":sout=#file{dst=" + destination + "}",
+                        ":sout=#duplicate{dst=display,dst=std{access=file,mux=ts,dst="+destination+"}}",
                         ":sout-keep",// 持续开启串流输出 (默认关闭) 
                     };
+                    this.VlcControl.SourceProvider.MediaPlayer.ResetMedia();
                     this.VlcControl.SourceProvider.MediaPlayer.SetMedia(new Uri(filePath), options);
                     this.VlcControl.SourceProvider.MediaPlayer.Play(); 
                 }
@@ -139,6 +137,7 @@ namespace WpfVLC
                     //":sout=#file{dst=" + destination + "}",
                     ":sout-keep",// 持续开启串流输出 (默认关闭) 
             };
+            this.VlcControl.SourceProvider.MediaPlayer.ResetMedia();
             this.VlcControl.SourceProvider.MediaPlayer.SetMedia(new Uri("rtsp://admin:admin123@192.168.1.195:554/1"), options);
             this.VlcControl.SourceProvider.MediaPlayer.Play(); 
         }
@@ -157,7 +156,7 @@ namespace WpfVLC
             {
                 optVideo,
                 optAudio,
-                ":dshow-chroma=MJPG",
+                ":dshow-chroma=MJPG",//摄像头录像需要设置该参数，如果直接播放摄像头，不需要设置，该参数为将色彩空间（色度）设置为mjpg，默认为yuv2
                 //":dshow-video-input=-1",
                 //":dshow-video-output=-1",
                 //":no-dshow-config",
