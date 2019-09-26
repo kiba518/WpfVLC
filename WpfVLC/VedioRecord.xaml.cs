@@ -24,13 +24,12 @@ using Path = System.IO.Path;
 
 namespace WpfVLC
 {
-    
+    //vlc.exe test.mp4 -vvv --no-loop  --sout "#es{access=file, dst-video=e:/video_%d.%c, dst-audio=e:/audio_%d.%c}"
+    //vlc.exe test.mp4 -vvv --sout "#duplicate{dst=standard{access=file,mux=avi,dst=e:/test.avi}, dst=rtp{dst=192.168.9.80,name=stream,sdp=rtsp://192.168.9.80:10086/stream}, dst=display}" 
     public partial class VedioRecord : Window
     {
-        private string filePath;
-        private string[] mediaOptions;
-        private string currentDirectory;
-        private string destination;
+        private string filePath; 
+        private string currentDirectory; 
         public VedioRecord()
         {
             InitializeComponent();
@@ -40,9 +39,8 @@ namespace WpfVLC
             var currentAssembly = Assembly.GetEntryAssembly();
             currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
             var libDirectory = new DirectoryInfo(System.IO.Path.Combine(currentDirectory, "libvlc", IntPtr.Size == 4 ? "win-x86" : "win-x64"));  
-            destination = Path.Combine(currentDirectory, "record.ts");
-         
-            this.VlcControl.SourceProvider.CreatePlayer(libDirectory); 
+            
+            this.VlcControl.SourceProvider.CreatePlayer(libDirectory,false); 
             this.VlcControl.SourceProvider.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
             this.VlcControl.SourceProvider.MediaPlayer.EncounteredError += MediaPlayer_EncounteredError;
             this.VlcControl.SourceProvider.MediaPlayer.SetVideoCallbacks(LockVideo, null, DisplayVideo, IntPtr.Zero);// //LockVideoCallback lockVideo, UnlockVideoCallback unlockVideo, DisplayVideoCallback display, IntPtr userData
@@ -59,11 +57,8 @@ namespace WpfVLC
             this.Dispatcher.BeginInvoke((Action)(() =>
             {
                 (this.VlcControl.SourceProvider.VideoSource as InteropBitmap)?.Invalidate();
-                Console.WriteLine(GetCurrentTime()); ;
-
-
-            }));
-
+                Console.WriteLine(GetCurrentTime());  
+            })); 
         }
 
         private void MediaPlayer_EncounteredError(object sender, Vlc.DotNet.Core.VlcMediaPlayerEncounteredErrorEventArgs e)
@@ -100,6 +95,8 @@ namespace WpfVLC
       
         private void open_ClickDuplicate(object sender, RoutedEventArgs e)
         {
+            string ed = "ts";
+            string dest  = Path.Combine(currentDirectory, $"record.{ed}");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Multiselect = false;
             ofd.Title = "请选择视频文件";
@@ -112,12 +109,16 @@ namespace WpfVLC
                     btnPause.Content = "暂停";
                     var options = new[]
                     {
-                        ":mmdevice-volume=0",
+                        //":mmdevice-volume=0",
                         //":audiofile-channels=0",
-                        ":live-caching = 0",//本地缓存毫秒数 
-                        ":sout=#file{dst=" + destination + "}",
-                        ":sout=#duplicate{dst=display,dst=std{access=file,mux=ts,dst="+destination+"}}",
-                        ":sout-keep",// 持续开启串流输出 (默认关闭) 
+                        //":live-caching = 0",//本地缓存毫秒数  display-audio :sout=#display
+                        //":sout=#transcode{vcodec=h264,fps=25,venc=x264{preset=ultrafast,profile=baseline,tune=zerolatency},scale=1,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +dest+"}}",
+                        ":sout=#duplicate{dst=display,dst=std{access=file,mux="+ed+",dst="+dest+"}}",
+                        //":sout=#display",
+                        ":sout-keep",
+                        ":sout-all",
+                        ":sout-audio",
+                        ":sout-audio-sync", 
                     };
                     this.VlcControl.SourceProvider.MediaPlayer.ResetMedia();
                     this.VlcControl.SourceProvider.MediaPlayer.SetMedia(new Uri(filePath), options);
@@ -131,9 +132,11 @@ namespace WpfVLC
         }
         private void openrtsp_Click(object sender, RoutedEventArgs e)
         {
+            string ed = "ts";
+            string dest = Path.Combine(currentDirectory, $"record.{ed}");
             var options = new[]
             {
-                    ":sout=#duplicate{dst=display,dst=std{access=file,mux=ts,dst=" +destination+"}}",
+                    ":sout=#duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +dest+"}}",
                     //":sout=#file{dst=" + destination + "}",
                     ":sout-keep",// 持续开启串流输出 (默认关闭) 
             };
@@ -174,7 +177,7 @@ namespace WpfVLC
                 size, 
                 ":sout-keep",// 持续开启串流输出 (默认关闭)
                 ":sout-all",
-                ":sout=#transcode{vcodec=h264,fps=25,venc=x264{preset=ultrafast,profile=baseline,tune=zerolatency},scale=1,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +destination+"}}", 
+                ":sout=#transcode{vcodec=h264,fps=25,venc=x264{preset=ultrafast,profile=baseline,tune=zerolatency},scale=1,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +dest+"}}", 
                
                 //":sout=#duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +dest+"}}",//可以录像，但是该录像视频太大，建议转码后录像,并且不录制声音  
             };
@@ -199,8 +202,9 @@ namespace WpfVLC
         {
             new Task(() =>
             {
-                this.VlcControl.SourceProvider.MediaPlayer.Stop();//这里要开线程处理，不然会阻塞播放 
-
+                //这里要开线程处理，不然会阻塞播放 
+                //Dispatcher.Invoke(() => { this.VlcControl.SourceProvider.MediaPlayer.Stop(); });
+                this.VlcControl.SourceProvider.MediaPlayer.Stop(); 
             }).Start();
         }
         private float lastPlayTime = 0;

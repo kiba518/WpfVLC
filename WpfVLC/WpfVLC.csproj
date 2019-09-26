@@ -81,7 +81,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dll\Vlc.DotNet.Core.Interops.dll</HintPath>
     </Reference>
-    <Reference Include="Vlc.DotNet.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=84529da31f4eb963, processorArchitecture=MSIL">
+    <Reference Include="Vlc.DotNet.Wpf, Version=0.0.0.0, Culture=neutral, PublicKeyToken=84529da31f4eb963, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dll\Vlc.DotNet.Wpf.dll</HintPath>
     </Reference>
@@ -173,6 +173,7 @@
     <Content Include="Dll\Vlc.DotNet.Core.dll" />
     <Content Include="Dll\Vlc.DotNet.Core.Interops.dll" />
     <Content Include="Dll\Vlc.DotNet.Wpf.dll" />
+    <Resource Include="ReadMe.txt" />
     <Resource Include="Image\max.png" />
     <Resource Include="Image\close.png" />
     <Resource Include="Image\min.png" />
