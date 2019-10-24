@@ -138,6 +138,7 @@ namespace WpfVLC
             {
                     ":sout=#duplicate{dst=display,dst=std{access=file,mux="+ed+",dst=" +dest+"}}",
                     //":sout=#file{dst=" + destination + "}",
+                    //":sout=#duplicate{dst=display,dst=rtp{sdp=rtsp://:5544/cam}}", 想本地端口5544播放rtsp
                     ":sout-keep",// 持续开启串流输出 (默认关闭) 
             };
             this.VlcControl.SourceProvider.MediaPlayer.ResetMedia();
