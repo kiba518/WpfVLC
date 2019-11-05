@@ -30,8 +30,21 @@ namespace WpfVLC
             var currentAssembly = Assembly.GetEntryAssembly();
             var currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
             var libDirectory = new DirectoryInfo(System.IO.Path.Combine(currentDirectory, "libvlc", IntPtr.Size == 4 ? "win-x86" : "win-x64"));
-            this.VlcControl.SourceProvider.CreatePlayer(libDirectory); 
+            this.VlcControl.SourceProvider.CreatePlayer(libDirectory);
+            this.VlcControl.SourceProvider.MediaPlayer.EncounteredError += MediaPlayer_EncounteredError;
+            this.VlcControl.SourceProvider.MediaPlayer.Log += MediaPlayer_Log;
         }
+
+        private void MediaPlayer_Log(object sender, Vlc.DotNet.Core.VlcMediaPlayerLogEventArgs e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
+        private void MediaPlayer_EncounteredError(object sender, Vlc.DotNet.Core.VlcMediaPlayerEncounteredErrorEventArgs e)
+        {
+             
+        }
+
         private void camera_Click(object sender, RoutedEventArgs e)
         {
             string mrl = @"dshow://  ";
